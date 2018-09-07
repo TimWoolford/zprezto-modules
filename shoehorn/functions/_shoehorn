@@ -1,0 +1,19 @@
+#compdef shoehorn
+
+local ret=1 state context state_descr line
+
+_arguments ':goal:->goal' ':app:->app' ':version:->version' ':env:->env'
+
+case "$state" in
+  goal)
+    local -a goals
+    goals=(
+        "deploy:Deploy an app with Shoehorn"
+        "start:Start an app with Shoehorn"
+        "status:Check an app's status with Shoehorn"
+        "stop:Stop an app with Shoehorn"
+        "clean:Remove an app with Shoehorn"
+    )
+    _describe -t goals 'shoehorn aggregate goals' goals
+    ;;
+esac

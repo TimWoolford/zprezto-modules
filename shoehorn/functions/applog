@@ -1,0 +1,19 @@
+#function applog {
+    local app="$1"
+    local version="$2"
+    local logfile="$3"
+
+    local isDockerImage
+    isDockerImage="$(_is_docker_image ${app})"
+    if [ $? -eq 0 ]; then
+        docker logs ${app}
+        return 1;
+    fi
+
+    if [[ -z ${app} || -z ${version} || -z ${logfile} ]]; then
+        echo "Usage: $0 app version logfile"
+        return 1
+    fi
+
+    less "/logs/apps/${app}/${version}/${logfile}"
+#}

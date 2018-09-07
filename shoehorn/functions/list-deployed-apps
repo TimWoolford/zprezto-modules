@@ -1,0 +1,85 @@
+function _list_local_apps {
+    local -a app_dirs=("${(@f)$(find /data/apps -depth 2 | sed 's/\/data\/apps\///g')}")
+
+    local -A apps
+
+    for app_dir in ${app_dirs}; do
+        local app="${app_dir%%/*}"
+        local version="${app_dir#*/}"
+
+        if [ -z ${apps[$app]}  ]; then
+            apps[$app]=""
+        fi
+
+        apps[$app]+="$version "
+    done
+
+    for app in "${(@k)apps}"; do
+        echo "$FX[bold]$FG[yellow]${app}$FG[white]:$FX[no-bold]"
+        local -a app_versions
+        app_versions=("${(s: :)apps[$app]}")
+
+        for app_version in ${app_versions}; do
+            local status_script="/data/apps/${app}/${app_version}/status.sh"
+
+            if [ ! -f ${status_script} ] || [ ! -x ${status_script} ]; then
+                continue
+            fi
+
+            local description="${app_version}"
+
+            ${status_script} -p 1>/dev/null
+            local exit_code=$?
+
+            if [ ${exit_code} = 0 ]; then
+                 description+=" $FG[green](running)"
+            fi
+
+            echo "$FX[bold]$FG[white]- ${description}$FX[no-bold]"
+        done
+    done
+}
+
+function _list-docker-apps {
+    local -a docker_lines
+    IFS=$'\n'
+    docker_lines=($( docker ps -a --format "{{ .Image }}|{{ .Status }}" 2> /dev/null))
+    if [ $? != 0 ]; then
+      return 1;
+    fi
+
+    for docker_line in ${docker_lines}; do
+        IFS="|" read docker_image docker_status <<< ${docker_line}
+
+        docker_app=( $( docker image inspect ${docker_image} --format "{{ index .RepoTags 0 }}" ) )
+
+        if [[ $docker_app == *'/'* ]]; then
+            number_of_occurrences=$(grep -o "/" <<< "$docker_app" | wc -l)
+            if [ $number_of_occurrences -eq 2 ]; then
+                IFS=/ read repo group app_image <<< ${docker_app}
+            else
+                IFS=/ read repo app_image <<< ${docker_app}
+            fi
+        else
+            app_image=${docker_app}
+        fi
+
+        IFS=: read image version <<< ${app_image}
+        echo "$FX[bold]$FG[yellow]$image$FG[white]:$FX[no-bold]"
+
+        local description=${version}
+
+        if [[ $docker_status = 'Up'* ]]; then
+            description+=" $FG[green](running)"
+        fi
+
+        echo "$FX[bold]$FG[white]- ${description}$FX[no-bold]"
+    done
+}
+
+function list_deployed-apps {
+      _list_local_apps
+      _list-docker-apps
+}
+
+list_deployed-apps "$@"

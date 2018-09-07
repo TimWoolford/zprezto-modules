@@ -1,0 +1,11 @@
+# function appout {
+    local app="$1"
+    local version="$2"
+
+    if [[ -z ${app} || -z ${version} ]]; then
+        echo "Usage: $0 app version"
+        return 1
+    fi
+
+    less "/data/apps/${app}/${version}/${app}.out"
+#}
