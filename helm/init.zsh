@@ -1,4 +1,4 @@
-if (( ! $+commands[helm] )); then
+if [ ! $commands[helm] ]; then
   return 1
 fi
 
