@@ -1,0 +1,17 @@
+function startVdcDatabase {
+    local app_name='oracle-12c-vdc'
+    output=$(docker inspect --format='{{ .State.Status }}' $app_name 2> /dev/null)
+
+    if [[ $? -eq 1 ]]; then
+        echo 'Creating local Docker database for VDC apps'
+        docker run --name oracle-12c-vdc -d -p 1525:1521 -p 5505:5500 --shm-size=2g --restart=unless-stopped --net=sonique-network --net-alias=oracle-12c-vdc repo.sns.sky.com:8085/dost/oracle-12c-vdc:1.56 > /dev/null
+    else
+        if [[ $output == 'running' ]]; then
+            #do nothing
+        else
+            echo 'Starting local Docker database for VDC apps'
+            docker start oracle-12c-vdc > /dev/null
+        fi
+    fi
+    echo "Docker database for VDC apps running on jdbc:oracle:thin:@//localhost:1525/db1"
+}

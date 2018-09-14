@@ -1,0 +1,28 @@
+function setLinks {
+    {
+        function $0_link {
+            local target=$1
+            local link_name=$2
+
+            if [ -e ${target} ]; then
+                mkdir -p ${link_name%/*}
+
+                if [ -e ${link_name} ]; then
+                    rm -rf ${link_name}
+                fi
+                ln -sfnv ${target} ${link_name}
+            fi
+        }
+
+        for linky in `ls $ZDOTDIR/dotfiles`
+        do
+          $0_link ${ZDOTDIR}/dotfiles/${linky} ~/.${linky}
+        done
+
+        $0_link ~/.m2/repository ~/repository
+        $0_link ${ZDOTDIR}/sonique-maven-settings.xml ~/.m2/settings.xml
+
+    } always {
+        unfunction $0_link
+    }
+}
