@@ -1,4 +1,3 @@
-#!/usr/bin/env zsh
 
 function _start_docker_app {
     local app_name=$1

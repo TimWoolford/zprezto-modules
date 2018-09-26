@@ -1,0 +1,6 @@
+local goal="$1"
+local app="$2"
+local version="${3#*-}"
+local env="${3%%-*}"
+
+shoehorn ${goal} ${app} ${version} ${env}

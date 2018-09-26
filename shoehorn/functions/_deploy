@@ -1,6 +1,6 @@
 #compdef deploy
 
-local ret=1 state context state_descr line
+local ret=1 state
 
 _arguments ':app:->app' ':version:->version' ':env:->env'
 
