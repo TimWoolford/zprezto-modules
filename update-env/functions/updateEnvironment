@@ -1,0 +1,22 @@
+#function updateEnvironment {
+    export HOMEBREW_CASK_OPTS="--appdir=/Applications"
+
+    echo "Updating environment"
+    git -C ${ZDOTDIR} pull --recurse-submodules origin master
+
+    echo "Updating homebrew"
+    brew update && brew upgrade
+    brew tap homebrew/bundle && brew bundle --verbose --file=${ZDOTDIR}/Brewfile
+
+    if ( [ -d ${ZDOTDIR}/ssh ] ); then
+        echo "Adding SSH keys"
+        for identityFile in `ls ${ZDOTDIR}/ssh/*_rsa`
+        do
+            chmod 600 ${identityFile}
+            ssh-add -K ${identityFile}
+        done
+    fi
+
+    $(date +%s > ~/.environment_lastupdate)
+    echo "\n\n$FG[red]You will need to reopen a terminal session to benefit from any updates$FG[none]"
+#}

@@ -6,6 +6,7 @@ function _print_if_no_pipe {
 
 function _run_shoehorn {
     zstyle -s ':prezto:module:shoehorn' version '_shoehorn_version'
+
     local shoehorn_filename="shoehorn-${_shoehorn_version}-jar-with-dependencies.jar"
     local shoehorn_jar_path="${TMPDIR}/${shoehorn_filename}"
     echo $shoehorn_jar_path
@@ -44,7 +45,6 @@ function _shoehorn_local {
 
     shoehorn ${goal} ${app} ${version} ${env}
 }
-
 
 function encrypt {
     _run_shoehorn shoehorn.Encrypt $@
