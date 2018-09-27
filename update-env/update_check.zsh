@@ -31,15 +31,16 @@ function startUpdateProcess {
     local time_since_update=$(timeSinceLastUpdate)
     local line
 
-    echo "It has been $(expr ${time_since_update} / ${day_seconds}) days since your environment was updated"
     if [ ${time_since_update} -gt ${update_frequency} ]; then
+        echo "$FX[bold]$FG[red]Environment not updated for $(expr ${time_since_update} / ${day_seconds}) days.$FX[none]$FG[none]"
         echo "Would you like to check for updates? [Y/n]: \c"
         read line
         if [ "${line}" = Y ] || [ "${line}" = y ]; then
             updateEnvironment
         fi
-    else
-        checkForEnvUpdates
+    elif [ ${time_since_update} -gt ${day_seconds} ]; then
+       echo "It has been $FX[bold]$(expr ${time_since_update} / ${day_seconds})$FX[none] days since your environment was updated"
+       checkForEnvUpdates
     fi
 }
 
