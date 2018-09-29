@@ -1,6 +1,6 @@
 
 # taken from https://gist.github.com/chrisdarroch/7018927 and modified a bit
-function idea {
+#function idea {
     # check for where the latest version of idea is installed
     local idea="$(ls -1d /Applications/IntelliJ\ * | tail -n1)"
     local wd="$(pwd)"
@@ -36,4 +36,4 @@ function idea {
             open "$idea"
         fi
     fi
-}
+#}
