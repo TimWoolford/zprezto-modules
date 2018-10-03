@@ -1,0 +1,7 @@
+#function gclone {
+    local paths
+    IFS='/' read -r -A paths <<< `pwd`
+
+    git clone git@${paths: -2:1}:${paths: -1:1}/$1.git
+
+#}
