@@ -2,7 +2,8 @@
     export HOMEBREW_CASK_OPTS="--appdir=/Applications"
 
     echo "Updating environment"
-    git -C ${ZDOTDIR} pull --recurse-submodules origin master
+    git -C ${ZDOTDIR} pull origin master
+    git -C ${ZDOTDIR} submodule update --recursive --remote
 
     echo "Updating homebrew"
     brew update && brew upgrade
