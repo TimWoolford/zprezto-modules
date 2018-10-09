@@ -1,7 +1,12 @@
 #function gclone {
-    local paths
-    IFS='/' read -r -A paths <<< `pwd`
+    if [[ $# == 1 ]]; then
+        local paths
+        IFS='/' read -r -A paths <<< `pwd`
 
-    git clone git@${paths: -2:1}:${paths: -1:1}/$1.git
-
+        git clone git@${paths: -2:1}:${paths: -1:1}/$1.git
+    elif [[ "$1" =~ "https" ]]; then
+        git clone $1/$2/$2.git ~/projects/src/${1#https://}/$2/$3.git
+    else
+        git clone git@$1:$2/$3.git ~/projects/src/$1/$2/$3
+    fi
 #}
