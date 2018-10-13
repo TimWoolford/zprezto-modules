@@ -1,4 +1,4 @@
-function startDockerDatabase {
+#function startDockerDatabase {
     local app_name='oracle-12c'
     output=$(docker inspect --format='{{ .State.Status }}' $app_name 2> /dev/null)
 
@@ -14,4 +14,4 @@ function startDockerDatabase {
         fi
     fi
     echo "Docker database for Mobile apps running on jdbc:oracle:thin:@//localhost:1521/db1"
-}
+#}

@@ -1,0 +1,51 @@
+function setLinks {
+    {
+        function setLinks_link {
+            local link_name=$1
+            local target=$2
+
+            if [ -e ${target} ]; then
+                mkdir -p ${link_name%/*}
+
+                if [ -e ${link_name} ]; then
+                    rm -rf ${link_name}
+                fi
+                ln -sfnv ${target} ${link_name}
+            fi
+        }
+
+        function setLinks_nolink {
+            local target=$1
+            local source=$2
+
+            if [ ! -e ${target} ]; then
+              mkdir -p ${target}
+            fi
+
+            setLinks_doLinking ${source} ${target} ""
+        }
+
+        function setLinks_doLinking {
+            local source=$1
+            local target=$2
+            local dot=$3
+
+            for linky in `ls ${source}`
+            do
+              if [[ ${linky} =~ "_nolink$" ]]; then
+                setLinks_nolink "${target}/${dot}${linky%_nolink}" "${source}/${linky}"
+              else
+                setLinks_link "${target}/${dot}${linky}" "${source}/${linky}"
+              fi
+            done
+        }
+
+        setLinks_doLinking $ZDOTDIR/dotfiles ~ "."
+        setLinks_link ~/.m2/repository ~/repository
+
+    } always {
+        unfunction setLinks_link
+        unfunction setLinks_nolink
+        unfunction setLinks_doLinking
+    }
+}

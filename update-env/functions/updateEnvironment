@@ -1,6 +1,4 @@
 #function updateEnvironment {
-    export HOMEBREW_CASK_OPTS="--appdir=/Applications"
-
     echo "Updating environment"
     git -C ${ZDOTDIR} pull origin master
     git -C ${ZDOTDIR} submodule update --recursive --remote
@@ -17,6 +15,8 @@
             ssh-add -K ${identityFile}
         done
     fi
+
+    setLinks
 
     $(date +%s > ~/.environment_lastupdate)
     echo "\n\n$FG[red]You will need to reopen a terminal session to benefit from any updates$FG[none]"
