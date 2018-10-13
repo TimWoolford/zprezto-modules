@@ -1,0 +1,3 @@
+#function rebuildDatabase {
+    mvn package -pl ${PWD##*/}-sql -PrebuildDatabase
+#}

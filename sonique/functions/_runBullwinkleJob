@@ -1,0 +1,6 @@
+#compdef runBullwinkleJob
+
+local -a jobs
+jobs=('file-writer:File Writer' 'file-reader:File Reader' 'notifier:Notifier' 'stale-requests:Stale Requests')
+
+_describe job_name jobs

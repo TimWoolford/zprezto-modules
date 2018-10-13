@@ -1,0 +1,3 @@
+#function upgradeDatabase {
+    mvn package -pl ${PWD##*/}-sql -PupgradeDatabase
+#}

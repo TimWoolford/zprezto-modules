@@ -1,0 +1,11 @@
+#function runBullwinkleJob {
+    local job_name=$1
+    local bullwinkle_version=$2
+
+    if [ -e ${bullwinkle_version} ]; then
+        bullwinkle_version=$(curl -s "${_ARTIFACTORY}/api/search/latestVersion?g=charts&a=bullwinkle-chart&v=*.*&repos=libs-releases-local")
+    fi
+    echo "Running Bullwinkle ${job_name} Job version bullwinkle_version"
+
+    (set -x; docker run --rm --name bullwinkle-${job_name} --net=sonique-network --net-alias=bullwinkle-${job_name} -v /data:/app/data -e TZ=Europe/London -e "app.maxEntries=30000" -e "app.port=8080" -e "app.notificationDeliveryAttemptLimit=5" -e "app.requestTimeoutInMinutes=5" -e "jdbc.transaction.context.factory.class=sonique.sql.transaction.factory.OracleTransactionContextFactory" -e "jdbc.connection.user=bullwinkle_user" -e "jdbc.connection.url=jdbc:oracle:thin:@//oracle-12c-vdc:1521/db1" -e "jdbc.connection.password=bullwinkle" -e "jdbc.connection.driver=oracle.jdbc.pool.OracleDataSource" -e "database.edition=BULLWINKLE_6" -e 'operator.port=11565' -e "operator.hostAddress=http://docker.for.mac.localhost" -e 'operator.writeEndpoint=/troll/llustreamplus/web/showAndTellController.html' -e 'operator.statusEndpoint=/troll/status' -e "file.retentionPeriodInDays=7" -e "tuk.record.actionBlock=I" -e "tuk.record.actionUnblock=R" -e "tuk.record.blockReasonCode=0011" -e "tuk.record.blockSource=Blocked on behalf of Sky" -e "tuk.record.bodyIdentifier=55" -e "tuk.record.colouredList=B" -e "tuk.record.createdDatePattern=yyMMdd" -e "tuk.record.destDir=/app/data/tuk/outgoing" -e "tuk.record.destinationDir=/app/data/tuk/incoming" -e "tuk.record.fileExtension=UPD" -e "tuk.record.filePrefix=SKY_CEIR_" -e "tuk.record.footerIdentifier=90" -e "tuk.record.headerIdentifier=10" -e "tuk.record.operator=SKY" -e "tuk.record.organisationId=GBRKY" -e "tuk.record.readDir=/app/data/tuk/incoming" -e "tuk.record.recordSpecificationVersion=01" -e "tuk.record.sourceDir=/app/data/tuk/incoming" -e "tuk.record.tmpDir=/app/data/tuk/tmp" -e "tuk.record.unblockReasonCode=0014" -e "tuk.record.unblockSource=Removed on behalf of Sky" -e "tuk.record.writeDir=/app/data/tuk/outgoing" repo.sns.sky.com:8085/ukiss/bullwinkle-${job_name}:${bullwinkle_version} )
+#}

@@ -1,0 +1,6 @@
+#compdef runBattenbergJob
+
+local -a jobs
+jobs=('loader:Loader')
+
+_describe job_name jobs
