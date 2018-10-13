@@ -1,4 +1,4 @@
-function setLinks {
+#function setLinks {
     {
         function setLinks_link {
             local link_name=$1
@@ -48,4 +48,4 @@ function setLinks {
         unfunction setLinks_nolink
         unfunction setLinks_doLinking
     }
-}
+#}
