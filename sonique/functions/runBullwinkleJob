@@ -3,7 +3,8 @@
     local bullwinkle_version=$2
 
     if [ -e ${bullwinkle_version} ]; then
-        bullwinkle_version=$(curl -s "${_ARTIFACTORY}/api/search/latestVersion?g=charts&a=bullwinkle-chart&v=*.*&repos=libs-releases-local")
+        local latest=`_get_latest_version bullwinkle libs-releases-local`
+        bullwinkle_version=${latest%-*}
     fi
     echo "Running Bullwinkle ${job_name} Job version bullwinkle_version"
 

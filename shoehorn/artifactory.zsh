@@ -6,100 +6,43 @@ non_docker_overrides=(
 )
 
 function _get_latest_version {
-    local -A artifact_coordinates
-    artifact_coordinates=(
-        gruffalo "sonique.gruffalo:gruffalo-build"
-        ffestiniog "sonique.ffestiniog:ffestiniog-core"
-        spm-sat "sonique.spm-sat:spm-sat-core"
-        redqueen "sonique.redqueen:redqueen-core"
-        luthor "sonique.luthor:luthor-core"
-        bullwinkle "charts:bullwinkle-chart"
-        sherman "sonique.sherman:sherman-core"
-        dudley "charts:dudley-chart"
-        rocky "charts:rocky-chart"
-        felix "charts:felix-chart"
-        battenberg "charts:battenberg-chart"
-        marzipan "charts:marzipan-chart"
-        garibaldi "charts:garibaldi-chart"
-        macaroon "charts:macaroon-chart"
-        eclair "charts:eclair-chart"
-    )
+   local app=$1
+   local level=${2:-'dev'}
 
-    local -A properties_coordinates
-    properties_coordinates=(
-        battenberg "sonique.battenberg:battenberg-properties"
-        eclair "sonique.eclair:eclair-properties"
-        garibaldi "sonique.garibaldi:garibaldi-properties"
-        macaroon "sonique.macaroon:macaroon-properties"
-        marzipan "sonique.marzipan:marzipan-properties"
-        bullwinkle "sonique.bullwinkle:bullwinkle-properties"
-        duley "sonique.dudley:dudley-properties"
-        rocky "sonique.rocky:rocky-properties"
-        felix "sonique.felix:felix-properties"
-    )
+   local devRepo="libs-releases-local"
+   local testRepo="test-releases-local"
+   local prodRepo="production-releases-local"
 
-    local -A artifact_version_patterns
-    artifact_version_patterns=(
-        battenberg "*.*"
-        eclair "*.*"
-        garibaldi "*.*"
-        macaroon "*.*"
-        marzipan "1.*"
-        dudley "*.*"
-        bullwinkle "*.*"
-        rocky "*.*"
-        felix "*.*"
-    )
+   local repo appDescription releaseRepo appPath appType
+   IFS=":" read appDescription releaseRepo appPath appType <<< ${APPLICATIONS[${app}]:-"${app}::sonique/${app}/${app}-deploy:bin.zip"}
 
-    local app="$1"
-    local repository="$2"
-    local coordinate=${artifact_coordinates[$app]}
-    local propertiesCoordinate=${properties_coordinates[$app]}
-    local appVersionPattern=${artifact_version_patterns[$app]}
+   if [[ ${level} == 'dev' ]]; then
+       repo=${devRepo}
+   else
+       repo=${releaseRepo:-$testRepo}
+   fi
 
-    if [ -z ${repository} ]; then
-        repository=${_ARTIFACTORY_REPOSITORY}
-    fi
+   {
+      function $0_version {
+          local aql="items.find({
+            \"repo\": { \"\$eq\": \"$1\" },
+            \"path\": { \"\$match\": \"$2/*\" },
+            \"name\": { \"\$match\": \"*$3\" }
+          })
+          .include( \"name\", \"repo\", \"path\", \"created\")
+          .sort({ \"\$desc\" : [\"created\"]})"
 
-    if [ -z ${coordinate} ]; then
-        local groupId="sonique.${app}"
-        local artifactId="${app}-deploy"
-    else
-        local groupId=${coordinate%:*}
-        local artifactId=${coordinate##*:}
-    fi
+          local response=`curl -X POST -s -u team.sonique:password -H "Content-Type: text/plain" -d "${aql}" ${_ARTIFACTORY}/api/search/aql`
+          local path=`echo ${response} | jq  -r '.results[0].path'`
+          echo ${path##*/}
+      }
 
-    if [ -z ${propertiesCoordinate} ]; then
-        local propertiesGroupId="sonique.${app}"
-        local propertiesArtifactId="${app}-properties"
-    else
-        local propertiesGroupId=${propertiesCoordinate%:*}
-        local propertiesArtifactId=${propertiesCoordinate##*:}
-    fi
+      local appVersion=`$0_version ${repo} ${appPath} ${appType}`
+      local propertiesVersion=`$0_version ${repo} "sonique/${app}/${app}-properties" "jar"`
 
-    if [ -z ${appVersionPattern} ]; then
-        local versionPattern="*"
-    else
-        local versionPattern=${appVersionPattern}
-    fi
+      echo "${appVersion}-${propertiesVersion}"
 
-    {
-        function fetch_latest_version {
-            curl -s "${_ARTIFACTORY}/api/search/latestVersion?g=${1}&a=${2}&v=${3}&repos=${repository}"
-        }
-
-        local app_version="$(fetch_latest_version ${groupId} ${artifactId} ${versionPattern})"
-        if [[ ${app_version} =~ '"status" : 404' ]]; then
-            return
-        fi
-
-        local properties_version="$(fetch_latest_version ${propertiesGroupId} ${propertiesArtifactId} ${versionPattern})"
-        if [[ ${properties_version} =~ '"status" : 404' ]]; then
-            return
-        fi
-
-        echo "${app_version}-${properties_version}"
-    } always {
-        unfunction fetch_latest_version
-    }
+  } always {
+      unfunction $0_version
+  }
 }

@@ -26,31 +26,10 @@ function _complete_aggregate_goals {
 
 function _complete_apps {
     local -a completion_apps
-    completion_apps=(
-        "aview:AView"
-        "battenberg:Battenberg"
-        "bullwinkle:Bullwinkle"
-        "dudley:Dudley"
-        "eclair:Eclair"
-        "ffestiniog:Ffestiniog"
-        "garibaldi:Garibaldi"
-        "gruffalo:Gruffalo"
-        "hector:Hector"
-        "kiki:Kiki"
-        "kuro:Kuro"
-        "luthor:Luthor"
-        "macaroon:Macaroon"
-        "marzipan:Marzipan"
-        "optimusprimer:Optimus Primer"
-        "raiden:Raiden"
-        "redqueen:Red Queen"
-        "rocky:Rocky"
-        "sherman:Sherman"
-        "felix:Felix"
-        "shovel:Shovel"
-        "spm-sat:Superman Show-and-Tell"
-        "superman:Superman"
-    )
+    for app in ${(k)APPLICATIONS}; do
+      IFS=":" read name other <<< ${APPLICATIONS[$app]}
+      completion_apps+="$app:$name"
+    done
 
     _describe -t completion_apps 'shoehorn apps' completion_apps
 }
@@ -76,14 +55,13 @@ function _complete_versions_with_latest {
         "${latest_dev_version}:The latest dev version of ${selected_app} (default)"
     )
 
-    local test_releases_repository="test-releases-local"
-    local latest_signed_off_version="$(_get_latest_version ${selected_app} ${test_releases_repository})"
+    local latest_signed_off_version="$(_get_latest_version ${selected_app} 'prod')"
 
     if [ ! -z ${latest_signed_off_version} ]; then
-        versions+=("${latest_signed_off_version}:The signed-off version of ${selected_app}")
+        versions+="${latest_signed_off_version}:The signed-off version of ${selected_app}"
     fi
 
-    versions+=("DEV-SNAPSHOT:The DEV-SNAPSHOT version of ${selected_app}")
+    versions+="DEV-SNAPSHOT:The DEV-SNAPSHOT version of ${selected_app}"
 
     _describe -t versions 'shoehorn latest versions' versions
 }
