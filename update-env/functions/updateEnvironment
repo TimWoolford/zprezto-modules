@@ -17,6 +17,7 @@
     fi
 
     setLinks
+    compinit
 
     $(date +%s > ~/.environment_lastupdate)
     echo "\n\n$FX[bold]$FG[yellow]You will need to reopen a terminal session to benefit from any updates$FG[none]$FX[none]"
