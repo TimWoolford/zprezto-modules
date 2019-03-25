@@ -1,0 +1,3 @@
+#function resetBrew
+
+brew bundle cleanup --file=${ZDOTDIR}/Brewfile --force

@@ -1,0 +1,4 @@
+#compdef jenv
+
+_arguments '1:Command:($(jenv commands))' '2:Option:($(jenv completions ${words[2]}))'
+
