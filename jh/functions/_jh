@@ -1,0 +1,6 @@
+#compdef jh jh-set
+
+local -a jvms
+IFS=$'\n' jvms=($(/usr/libexec/java_home -x | plutil -convert json -o - - | jq  -r '.[] | "\(.JVMVersion):\(.JVMName)"'))
+
+_describe "JVMS" jvms
