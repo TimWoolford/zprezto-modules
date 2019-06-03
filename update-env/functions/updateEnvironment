@@ -1,7 +1,7 @@
 #function updateEnvironment {
     echo "Updating environment"
     git -C ${ZDOTDIR} pull origin ${DOTDIR_BRANCH:-master}
-    git -C ${ZDOTDIR} submodule update --recursive --remote
+    git -C ${ZDOTDIR} submodule update --init --recursive --remote
 
     echo "Updating homebrew"
     brew update && brew upgrade
