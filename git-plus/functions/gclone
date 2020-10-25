@@ -5,19 +5,20 @@
 
             if [[ ${repoUrl} =~ "^https://" ]]; then
               git clone ${repoUrl}/${group}/${project}.git ${target}
-            elif [[ ${repoUrl} =~ "^git@" ]]; then
+            elif [[ ${repoUrl} =~ "^(.*)@" ]]; then
               git clone ${repoUrl}:${group}/${project}.git ${target}
             else
               local conn_type
-              zstyle -s ':prezto:module:git-plus' conn-type 'conn_type'
+              IFS="|" read conn_type rest <<< ${REPOS[${repoUrl}]}
 
               if [[ "${conn_type}" == "https" ]]; then
                 $0 https://${repoUrl} ${group} ${project} ${target}
               else
-                $0 git@${repoUrl} ${group} ${project} ${target}
+                $0 ${conn_type}${repoUrl} ${group} ${project} ${target}
               fi
             fi
         }
+
 
     if [[ $# == 1 ]]; then
         local paths
@@ -29,11 +30,11 @@
         local default_repo
         zstyle -s ':prezto:module:git-plus' default-repo 'default_repo'
 
-        $0_doClone ${default_repo} ${1} ${2} "${HOME}/projects/src/${default_repo#(https://|git@)}/${1}/${2}"
+        $0_doClone ${default_repo} ${1} ${2} "${CHECKOUT_DIR}/${DEFAULT_REPO#(https://|*@)}/${1}/${2}"
 
     elif [[ $# == 3 ]]; then
 
-       $0_doClone $1 $2 $3 "${HOME}/projects/src/${1#(https://|git@)}/${2}/${3}"
+       $0_doClone $1 $2 $3 "${CHECKOUT_DIR}/${1#(https://|*@)}/${2}/${3}"
     fi
 
     } always {
