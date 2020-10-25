@@ -11,6 +11,8 @@ for repo linedata in ${(@kv)REPOS}; do
   IFS="|" read conn spath <<< ${linedata}
   for i in ${(@s/ /)spath:="*"}; do
     local repoPath=${_checkout_dir}/${repo}/${i}
-    cdpath+=(${~repoPath})
+    if [[ -n `echo ${~repoPath}(NY1)` ]]; then
+      cdpath+=(${~repoPath})
+    fi
   done
 done
