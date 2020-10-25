@@ -27,8 +27,6 @@
         $0_doClone ${paths: -2:1} ${paths: -1:1}  ${1}
 
     elif [[ $# == 2 ]]; then
-        local default_repo
-        zstyle -s ':prezto:module:git-plus' default-repo 'default_repo'
 
         $0_doClone ${default_repo} ${1} ${2} "${CHECKOUT_DIR}/${DEFAULT_REPO#(https://|*@)}/${1}/${2}"
 
