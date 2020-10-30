@@ -1,30 +1,31 @@
 #function gclone {
-    {
-        function $0_doClone {
-            local repoUrl=$1 group=$2 project=$3 target=$4
+{
+    function $0_doClone {
+        local repoUrl=$1 group=$2 project=${3%.git}.git target=$4
 
-            if [[ ${repoUrl} =~ "^https://" ]]; then
-              git clone ${repoUrl}/${group}/${project}.git ${target}
-            elif [[ ${repoUrl} =~ "^(.*)@" ]]; then
-              git clone ${repoUrl}:${group}/${project}.git ${target}
-            else
-              local conn_type
-              IFS="|" read conn_type rest <<< ${REPOS[${repoUrl}]}
+        if [[ ${repoUrl} =~ "^https://" ]]; then
+            git clone ${repoUrl}/${group}/${project} ${target}
+        elif [[ ${repoUrl} =~ "^(.*)@" ]]; then
+            git clone ${repoUrl}:${group}/${project} ${target}
+        elif [[ -n "${REPOS[${repoUrl}]}" ]]; then
+            IFS="|" read conn_type rest <<< ${REPOS[${repoUrl}]}
 
-              if [[ "${conn_type}" == "https" ]]; then
+            if [[ "${conn_type}" == "https" ]]; then
                 $0 https://${repoUrl} ${group} ${project} ${target}
-              else
+            else
                 $0 ${conn_type}${repoUrl} ${group} ${project} ${target}
-              fi
             fi
-        }
-
+        else
+            echo "$FX[bold]$FG[red]Cannot resolve repo [$repoUrl /$group/$project]$FX[none]$FG[none]"
+        fi
+    }
 
     if [[ $# == 1 ]]; then
-        local paths
-        IFS='/' read -r -A paths <<< `pwd`
+        local myPath=${$(pwd)#${CHECKOUT_DIR}/}
+        local repo group
+        IFS='/' read repo group <<< ${myPath}
 
-        $0_doClone ${paths: -2:1} ${paths: -1:1}  ${1}
+        $0_doClone ${repo} ${group} ${1}
 
     elif [[ $# == 2 ]]; then
 
@@ -32,10 +33,10 @@
 
     elif [[ $# == 3 ]]; then
 
-       $0_doClone $1 $2 $3 "${CHECKOUT_DIR}/${1#(https://|*@)}/${2}/${3}"
+        $0_doClone $1 $2 $3 "${CHECKOUT_DIR}/${1#(https://|*@)}/${2}/${3}"
     fi
 
-    } always {
-       unfunction $0_doClone
-    }
+} always {
+    unfunction $0_doClone
+}
 #}
