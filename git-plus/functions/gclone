@@ -1,4 +1,3 @@
-#function gclone {
 {
     function $0_doClone {
         local repoUrl=$1 group=$2 project=${3%.git}.git target=$4
@@ -20,23 +19,24 @@
         fi
     }
 
-    if [[ $# == 1 ]]; then
-        local myPath=${$(pwd)#${CHECKOUT_DIR}/}
-        local repo group
-        IFS='/' read repo group <<< ${myPath}
-
-        $0_doClone ${repo} ${group} ${1}
-
-    elif [[ $# == 2 ]]; then
-
-        $0_doClone ${default_repo} ${1} ${2} "${CHECKOUT_DIR}/${DEFAULT_REPO#(https://|*@)}/${1}/${2}"
-
-    elif [[ $# == 3 ]]; then
-
-        $0_doClone $1 $2 $3 "${CHECKOUT_DIR}/${1#(https://|*@)}/${2}/${3}"
+    local repo group project target
+    if [[ $# == 1 ]]; then # derive repo and group from path
+        project=${1} target=${project%.git}
+        IFS='/' read repo group <<< ${$(pwd)#${CHECKOUT_DIR}/}
+    elif [[ $# == 2 ]]; then # use default repo with provided group and path
+        repo=${DEFAULT_REPO} group=${1} project=${2}
+        target="${CHECKOUT_DIR}/${repo#(https://|*@)}/${group}/${project%.git}"
+    elif [[ $# == 3 ]]; then # use provided repo, group and path
+        repo=${1} group=${2} project=${3}
+        target="${CHECKOUT_DIR}/${repo#(https://|*@)}/${group}/${project%.git}"
     fi
+
+    if [[ -n ${target} ]]; then
+        mkdir -p ${target}
+    fi
+
+    $0_doClone ${repo} ${group} ${project} ${target}
 
 } always {
     unfunction $0_doClone
 }
-#}
