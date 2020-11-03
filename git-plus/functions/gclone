@@ -1,4 +1,7 @@
 {
+
+    local repo group project target
+
     function $0_doClone {
         local repoUrl=$1 group=$2 project=${3%.git}.git target=$4
 
@@ -19,7 +22,6 @@
         fi
     }
 
-    local repo group project target
     if [[ $# == 1 ]]; then # derive repo and group from path
         project=${1} target=${project%.git}
         IFS='/' read repo group <<< ${$(pwd)#${CHECKOUT_DIR}/}
@@ -37,6 +39,13 @@
 
     $0_doClone ${repo} ${group} ${project} ${target}
 
+    if [[ -e "${target}/.gitmodules" ]]; then
+        git -C ${target} submodule update --init --remote --recursive
+    fi
+
 } always {
     unfunction $0_doClone
+    if [[ -d ${target} && -z "$(ls -A ${target})" ]]; then
+        rmdir ${target}
+    fi
 }
