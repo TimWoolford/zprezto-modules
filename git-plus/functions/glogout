@@ -1,11 +1,7 @@
 #function glogout {
-    local default_repo;
-    if [[ -v ${1} ]]; then
-      default_repo=${1}
-    else
-      zstyle -s ':prezto:module:git-plus' default-repo 'default_repo'
-    fi
-    sudo security -q  delete-internet-password -s ${default_repo} > /dev/null
+    local repo=${1:-${DEFAULT_REPO}}
+
+    sudo security -q  delete-internet-password -s ${repo} 2> /dev/null
 
     git credential-cache exit
     git config --system --unset credential.helper
