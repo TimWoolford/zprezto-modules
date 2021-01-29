@@ -1,0 +1,1 @@
+watch kubectl get ${(j:,:)${(@f)$(kubectl api-resources --namespaced --verbs=list -o name)}} --selector=chart_name=$1
