@@ -17,6 +17,8 @@
     fi
 
     setLinks
+
+    rm -rf ${ZDOTDIR}/.zcompdump*
     compinit
 
     $(date +%s >| ~/.environment_lastupdate)
