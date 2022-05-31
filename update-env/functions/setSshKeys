@@ -1,17 +1,18 @@
 #function setSshKeys {
 
-    if ( [ -d ${ZDOTDIR}/ssh ] ); then
+    local -a privateKeyFiles=(${ZDOTDIR}/ssh/*_rsa(N))
+    if [[ $#privateKeyFiles > 0 ]]; then
         echo "Adding SSH keys"
-        for identityFile in `ls ${ZDOTDIR}/ssh/*_rsa`
+        for identityFile in $privateKeyFiles
         do
             chmod 600 ${identityFile}
             ssh-add --apple-use-keychain ${identityFile}
         done
+    fi
 
+    local -a publicKeyFiles=(${ZDOTDIR}/ssh/*_rsa.pub(N))
+    if [[ $#publicKeyFiles > 0 ]]; then
         echo "Adding Authorized Keys"
-
-        local -a publicKeyFiles=(${ZDOTDIR}/ssh/*_rsa.pub) 2>/dev/null
-
         for identityFile in $publicKeyFiles
         do
           echo "Adding ${identityFile}"
@@ -19,5 +20,4 @@
           grep -q -F "${pubKey}" ~/.ssh/authorized_keys 2>/dev/null || echo "${pubKey}" >> ~/.ssh/authorized_keys
         done
     fi
-
 #}

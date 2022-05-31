@@ -9,6 +9,7 @@
 
     setSshKeys
     setLinks
+    updateModules
 
     zcompdump="${ZDOTDIR:-$HOME}/.zcompdump"
     rm -rf $zcompdump ${zcompdump}.zwc ${XDG_CACHE_HOME:-$HOME/.cache}/prezto/zcomp{cache,dump}
