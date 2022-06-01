@@ -12,16 +12,13 @@ function timeSinceLastUpdate {
 }
 
 function checkForEnvUpdates {
-    local url="$(git -C "${ZDOTDIR}" config --get remote.origin.url)"
-    local remote_version="$(git ls-remote "${url}" HEAD | awk '{print $1}')"
-    local local_version="$(git -C "${ZDOTDIR}" rev-parse HEAD)"
+    local url remoteVersion localVersion
+    url="$(git -C "${ZDOTDIR}" config --get remote.origin.url)"
+    remoteVersion="$(git ls-remote "${url}" HEAD | awk '{print $1}')"
+    localVersion="$(git -C "${ZDOTDIR}" rev-parse HEAD)"
 
-    local bold=$(tput bold)
-    local text_yellow=$(tput setaf 3)
-    local reset_formatting=$(tput sgr0)
-
-    if [ "${remote_version}" != "${local_version}" ]; then
-        echo "${FX[bold]}${FG[yellow]}Your ${ZDOTDIR} is out of sync${reset_formatting}"
+    if [ "${remoteVersion}" != "${localVersion}" ]; then
+        echo "${FX[bold]}${FG[yellow]}Your ${ZDOTDIR} is out of sync${FX[none]}${FG[none]}"
     fi
 }
 
@@ -37,11 +34,13 @@ function startUpdateProcess {
     echo "Would you like to check for updates? [Y/n]: \c"
     read line
     if [ "${line}" = "Y" ] || [ "${line}" = "y" ]; then
-        updateEnvironment
+      updateEnvironment
+    else
+      printf "\n${FG[red]}%s${FG[none]}\n\n" "You have annoyed the monkey!"
     fi
   elif [[ time_since_update -gt day_seconds ]]; then
-   echo "It has been ${FX[bold]}$((time_since_update / day_seconds))${FX[none]} days since your environment was updated"
-   checkForEnvUpdates
+    echo "It has been ${FX[bold]}$((time_since_update / day_seconds))${FX[none]} days since your environment was updated"
+    checkForEnvUpdates
   fi
 }
 
