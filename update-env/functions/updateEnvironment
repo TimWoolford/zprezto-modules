@@ -57,7 +57,7 @@ function updateEnvironment_setLinks {
     local target=$2
 
     if [ -e "${target}" ]; then
-      mkdir -p "${linkName%/*}"
+      mkdir -p "${linkName:h}"
 
       if [ -e "${linkName}" ]; then
         rm -rf "${linkName}"
@@ -81,7 +81,7 @@ function updateEnvironment_setLinks {
 
     for linkPath in "${1}"/*
     do
-      local linkName=$(basename "${linkPath}")
+      local linkName=${linkPath:t}
 
       if [[ "${linkName}" =~ "_nolink$" ]]; then
         setLinks_nolink "${target}/${dot}${linkName%_nolink}" "${linkPath}"
@@ -112,16 +112,20 @@ function updateEnvironment_setLinks {
   git -C "${ZDOTDIR}" submodule update --init --recursive --remote
 
   stageTitle "Updating homebrew"
+  subTitle "Update brew"
   brew update && brew upgrade
-  brew tap homebrew/bundle && brew bundle --verbose --file="${ZDOTDIR}/Brewfile"
+  brew tap homebrew/bundle
+  subTitle "Update brewfile bundle"
+  brew bundle --verbose --file="${ZDOTDIR}/Brewfile"
 
   updateEnvironment_setSshKeys
   updateEnvironment_setLinks
   updateEnvironment_updateModules
 
+  stageTitle "Reloading Completions"
   local zcompdump="${ZDOTDIR:-$HOME}/.zcompdump"
   rm -rf ${zcompdump} ${zcompdump}.zwc ${XDG_CACHE_HOME:-$HOME/.cache}/prezto/zcomp{cache,dump}
-  autoload -Uz compinit
+  autoload -Uz compinit && compinit
 
   date +%s >| ~/.environment_lastupdate
   printf "\n\n${FX[bold]}${FG[yellow]}%s${FG[none]}${FX[none]}\n" "You will need to reopen a terminal session to benefit from any updates"

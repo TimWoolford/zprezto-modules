@@ -1,5 +1,5 @@
-if [[ ! $commands[kubectl] ]]; then
-return 1;
+if [[ ! ${commands[kubectl]} ]]; then
+  return 1;
 fi
 
 source <(kubectl completion zsh)
