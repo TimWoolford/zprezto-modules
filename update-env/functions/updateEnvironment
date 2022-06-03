@@ -91,15 +91,26 @@ function updateEnvironment_setLinks {
     done
   }
 
+  function setLinks_clearBrokenLinks {
+      for link in $(find ${HOME} -maxdepth 1 -type l); do
+        if [ ! -e "${link}" ]; then
+          echo "${FG[red]}Removing broken link [${link}].${FG[none]}"
+          unlink "${link}"
+        fi
+      done
+  }
+
   {
     stageTitle "Linking dotfiles"
     setLinks_doLinking "${ZDOTDIR}/dotfiles" ~ "."
     setLinks_link ~/.m2/repository ~/repository
+    setLinks_clearBrokenLinks
 
   } always {
     unfunction setLinks_link
     unfunction setLinks_nolink
     unfunction setLinks_doLinking
+    unfunction setLinks_clearBrokenLinks
   }
 }
 
@@ -123,9 +134,12 @@ function updateEnvironment_setLinks {
   updateEnvironment_updateModules
 
   stageTitle "Reloading Completions"
-  local zcompdump="${ZDOTDIR:-$HOME}/.zcompdump"
-  rm -rf ${zcompdump} ${zcompdump}.zwc ${XDG_CACHE_HOME:-$HOME/.cache}/prezto/zcomp{cache,dump}
+  rm -rf ${ZDOTDIR:-$HOME}/.zcompdump{,.zwc} ${XDG_CACHE_HOME:-$HOME/.cache}/prezto/zcomp{cache,dump}
   autoload -Uz compinit && compinit
+
+  zcompdump="${XDG_CACHE_HOME:-$HOME/.cache}/prezto/zcompdump"
+  compinit -C -d "$zcompdump"
+  zcompile "$zcompdump"
 
   date +%s >| ~/.environment_lastupdate
   printf "\n\n${FX[bold]}${FG[yellow]}%s${FG[none]}${FX[none]}\n" "You will need to reopen a terminal session to benefit from any updates"
