@@ -2,4 +2,6 @@ if [ ! $commands[helm] ]; then
   return 1
 fi
 
-source <(helm completion zsh)
+if ! (whence _helm > /dev/null); then
+  source <(helm completion zsh)
+fi

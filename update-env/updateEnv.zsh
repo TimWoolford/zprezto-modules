@@ -9,7 +9,9 @@ function subTitle {
 
 function updateEnvironment_gitUpdate {
   (
+    stageTitle "Updating environment"
     subTitle "Update git env dir"
+
     function cannot-fast-forward {
       local STATUS="$1"
       [[ -n "${STATUS}" ]] && printf "%s\n" "${STATUS}"
@@ -17,33 +19,36 @@ function updateEnvironment_gitUpdate {
       printf "running\ncd '%s' and then\n'git pull' " "${ZDOTDIR}"
       printf "to manually pull and possibly merge in changes\n"
     }
+
     cd -q -- "${ZDOTDIR}" || return 7
     local orig_branch="$(git symbolic-ref HEAD 2> /dev/null | cut -d '/' -f 3)"
     git fetch || return "$?"
+
     local UPSTREAM=$(git rev-parse '@{u}')
     local LOCAL=$(git rev-parse HEAD)
     local REMOTE=$(git rev-parse "$UPSTREAM")
     local BASE=$(git merge-base HEAD "$UPSTREAM")
+
     if [[ $LOCAL == $REMOTE ]]; then
-    printf "${FG[green]}There are no updates.${FG[none]}\n"
-    return 0
+      printf "${FG[green]}There are no updates.${FG[none]}\n"
+      return 0
     elif [[ $LOCAL == $BASE ]]; then
-    subTitle "There is an update available. Trying to pull."
-    if git pull --ff-only; then
-      subTitle "Syncing submodules"
-      git submodule sync --recursive
-      git submodule update --init --recursive
-      return $?
-    else
-      cannot-fast-forward
-      return 1
-    fi
+      subTitle "There is an update available. Trying to pull."
+      if git pull --ff-only; then
+        subTitle "Syncing submodules"
+        git submodule sync --recursive
+        git submodule update --init --recursive
+        return $?
+      else
+        cannot-fast-forward
+        return 1
+      fi
     elif [[ $REMOTE == $BASE ]]; then
-    cannot-fast-forward "Commits in master that aren't in upstream."
-    return 1
+      cannot-fast-forward "Commits in master that aren't in upstream."
+      return 1
     else
-    cannot-fast-forward "Upstream and local have diverged."
-    return 1
+      cannot-fast-forward "Upstream and local have diverged."
+      return 1
     fi
     return 1
   )
@@ -179,7 +184,6 @@ function updateEnvironment_addGpgKeys {
 }
 
 {
-  stageTitle "Updating environment"
   updateEnvironment_gitUpdate
 
   stageTitle "Updating homebrew"
