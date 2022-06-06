@@ -31,9 +31,8 @@ function startUpdateProcess {
   time_since_update=$(timeSinceLastUpdate)
   if [[ time_since_update -gt update_frequency ]]; then
     echo "${FX[bold]}${FG[red]}Environment not updated for $((time_since_update / day_seconds)) days.${FX[none]}${FG[none]}"
-    echo "Would you like to check for updates? [Y/n]: \c"
-    read line
-    if [ "${line}" = "Y" ] || [ "${line}" = "y" ]; then
+    vared -p "Would you like to check for updates? [Y/n]: " -c line
+    if [[ "${line}" =~ ^(Y|y)$ ]]; then
       updateEnvironment
     else
       printf "\n${FG[red]}%s${FG[none]}\n\n" "You have annoyed the monkey!"
@@ -45,6 +44,7 @@ function startUpdateProcess {
 }
 
 {
+  typeset -g UPDATE_ENV_DIR=${0:h}
   startUpdateProcess 6
 } always {
   unfunction timeSinceLastUpdate
