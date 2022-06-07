@@ -54,6 +54,15 @@ function updateEnvironment_gitUpdate {
   )
 }
 
+function updateEnvironment_brewUpdate {
+  stageTitle "Updating homebrew"
+  subTitle "Update brew"
+  brew update && brew upgrade
+  brew tap homebrew/bundle
+  subTitle "Update brewfile bundle"
+  brew bundle --verbose --file="${ZDOTDIR}/Brewfile"
+}
+
 function updateEnvironment_setSshKeys {
   stageTitle "Updating SSH keys"
   local -a privateKeyFiles=("${ZDOTDIR}"/ssh/*_rsa(N))
@@ -185,14 +194,7 @@ function updateEnvironment_addGpgKeys {
 
 {
   updateEnvironment_gitUpdate
-
-  stageTitle "Updating homebrew"
-  subTitle "Update brew"
-  brew update && brew upgrade
-  brew tap homebrew/bundle
-  subTitle "Update brewfile bundle"
-  brew bundle --verbose --file="${ZDOTDIR}/Brewfile"
-
+  updateEnvironment_brewUpdate
   updateEnvironment_setSshKeys
   updateEnvironment_setLinks
   updateEnvironment_updateModules
@@ -200,21 +202,17 @@ function updateEnvironment_addGpgKeys {
   updateEnvironment_addGpgKeys
 
   stageTitle "Reloading Completions"
-  rm -rf ${ZDOTDIR:-$HOME}/.zcompdump{,.zwc} ${XDG_CACHE_HOME:-$HOME/.cache}/prezto/zcomp{cache,dump}
-  autoload -Uz compinit && compinit
-
-  zcompdump="${XDG_CACHE_HOME:-$HOME/.cache}/prezto/zcompdump"
-  compinit -C -d "$zcompdump"
-  zcompile "$zcompdump"
+  resetCompletions
 
   date +%s >| ~/.environment_lastupdate
   printf "\n\n${FX[bold]}${FG[yellow]}%s${FG[none]}${FX[none]}\n" "You will need to reopen a terminal session to benefit from any updates"
 
 } always {
   unfunction updateEnvironment_gitUpdate
+  unfunction updateEnvironment_brewUpdate
   unfunction updateEnvironment_setSshKeys
-  unfunction updateEnvironment_updateModules
   unfunction updateEnvironment_setLinks
+  unfunction updateEnvironment_updateModules
   unfunction updateEnvironment_installFonts
   unfunction updateEnvironment_addGpgKeys
   unfunction stageTitle
