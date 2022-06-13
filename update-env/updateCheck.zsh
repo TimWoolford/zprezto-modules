@@ -1,4 +1,9 @@
 #!/usr/bin/env zsh
+typeset -g _UPDATE_ENV_STATUS=0
+# 0 - no update
+# 1 - over 1 day without check
+# 2 - upstream changes detected
+# 3 - over 7 days without check
 
 function timeSinceLastUpdate {
     local last_update
@@ -12,14 +17,15 @@ function timeSinceLastUpdate {
 }
 
 function checkForEnvUpdates {
-    local url remoteVersion localVersion
-    url="$(git -C "${ZDOTDIR}" config --get remote.origin.url)"
-    remoteVersion="$(git ls-remote "${url}" HEAD | awk '{print $1}')"
-    localVersion="$(git -C "${ZDOTDIR}" rev-parse HEAD)"
+  local UPSTREAM remoteVersion localVersion
+  UPSTREAM=$(git -C "${ZDOTDIR}" rev-parse '@{u}')
+  localVersion=$(git -C "${ZDOTDIR}" rev-parse HEAD)
+  remoteVersion=$(git -C "${ZDOTDIR}" rev-parse "$UPSTREAM")
 
-    if [ "${remoteVersion}" != "${localVersion}" ]; then
-        echo "${FX[bold]}${FG[yellow]}Your ${ZDOTDIR} is out of sync${FX[none]}${FG[none]}"
-    fi
+  if [ "${remoteVersion}" != "${localVersion}" ]; then
+    _UPDATE_ENV_STATUS=2
+    [[ ${__p9k_instant_prompt_active} ]] || echo "${FX[bold]}${FG[yellow]}Your ${ZDOTDIR} is out of sync${FX[none]}${FG[none]}"
+  fi
 }
 
 function startUpdateProcess {
@@ -30,21 +36,25 @@ function startUpdateProcess {
 
   time_since_update=$(timeSinceLastUpdate)
   if [[ time_since_update -gt update_frequency ]]; then
-    echo "${FX[bold]}${FG[red]}Environment not updated for $((time_since_update / day_seconds)) days.${FX[none]}${FG[none]}"
-    vared -p "Would you like to check for updates? [Y/n]: " -c line
-    if [[ "${line}" =~ ^(Y|y)$ ]]; then
-      updateEnvironment
-    else
-      printf "\n${FG[red]}%s${FG[none]}\n\n" "You have annoyed the monkey!"
+    _UPDATE_ENV_STATUS=3
+    if [[ ! ${__p9k_instant_prompt_active} ]]; then
+      echo "${FX[bold]}${FG[red]}Environment not updated for $((time_since_update / day_seconds)) days.${FX[none]}${FG[none]}"
+      vared -p "Would you like to check for updates? [Y/n]: " -c line
+      if [[ "${line}" =~ ^(Y|y)$ ]]; then
+        updateEnvironment
+      else
+        printf "\n${FG[red]}%s${FG[none]}\n\n" "You have annoyed the monkey!"
+      fi
     fi
   elif [[ time_since_update -gt day_seconds ]]; then
-    echo "It has been ${FX[bold]}$((time_since_update / day_seconds))${FX[none]} days since your environment was updated"
+    _UPDATE_ENV_STATUS=1
+    [[ ${__p9k_instant_prompt_active} ]] || echo "It has been ${FX[bold]}$((time_since_update / day_seconds))${FX[none]} days since your environment was updated"
     checkForEnvUpdates
   fi
 }
 
 {
-  typeset -g UPDATE_ENV_DIR=${0:h}
+  typeset -g _UPDATE_ENV_DIR=${0:h}
   startUpdateProcess 6
 } always {
   unfunction timeSinceLastUpdate

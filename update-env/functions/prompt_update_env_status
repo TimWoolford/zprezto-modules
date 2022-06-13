@@ -1,0 +1,20 @@
+typeset showMe="" icon=""
+
+case $_UPDATE_ENV_STATUS in
+  1)
+    showMe=1
+    icon="⚠️"
+    ;;
+  2)
+    showMe=1
+    icon="🔷"
+    ;;
+  3)
+    showMe=1
+    icon="‼️"
+    ;;
+esac
+
+p10k segment -i "${icon}" -c "${showMe}"
+
+unset showMe icon
