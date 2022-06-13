@@ -54,6 +54,14 @@ function updateEnvironment_gitUpdate {
   )
 }
 
+function updateEnvironment_gitSubmodules {
+    local user_module_dirs
+    subTitle "Update module directories"
+    zstyle -a ':prezto:load' pmodule-dirs 'user_module_dirs'
+
+    git -C "${ZDOTDIR}" submodule update --remote --recursive "${user_module_dirs:t}"
+}
+
 function updateEnvironment_brewUpdate {
   stageTitle "Updating homebrew"
   subTitle "Update brew"
@@ -194,6 +202,7 @@ function updateEnvironment_addGpgKeys {
 
 {
   updateEnvironment_gitUpdate
+  updateEnvironment_gitSubmodules
   updateEnvironment_brewUpdate
   updateEnvironment_setSshKeys
   updateEnvironment_setLinks
@@ -209,6 +218,7 @@ function updateEnvironment_addGpgKeys {
 
 } always {
   unfunction updateEnvironment_gitUpdate
+  unfunction updateEnvironment_gitSubmodules
   unfunction updateEnvironment_brewUpdate
   unfunction updateEnvironment_setSshKeys
   unfunction updateEnvironment_setLinks
