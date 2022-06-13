@@ -213,6 +213,7 @@ function updateEnvironment_addGpgKeys {
   stageTitle "Reloading Completions"
   resetCompletions
 
+  _UPDATE_ENV_STATUS=0
   date +%s >| ~/.environment_lastupdate
   printf "\n\n${FX[bold]}${FG[yellow]}%s${FG[none]}${FX[none]}\n" "You will need to reopen a terminal session to benefit from any updates"
 

@@ -1,4 +1,4 @@
-typeset showMe="" icon=""
+typeset showMe="" icon="" colour=0
 
 case $_UPDATE_ENV_STATUS in
   1)
@@ -7,14 +7,20 @@ case $_UPDATE_ENV_STATUS in
     ;;
   2)
     showMe=1
-    icon="🔷"
+    icon="⬇"
+    colour="004"
     ;;
   3)
+    showMe=1
+    icon="⬆"
+    colour="004"
+    ;;
+  4)
     showMe=1
     icon="‼️"
     ;;
 esac
 
-p10k segment -i "${icon}" -c "${showMe}"
+p10k segment -f "011" -i "${icon}" -c "${showMe}"
 
 unset showMe icon

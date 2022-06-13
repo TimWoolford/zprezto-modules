@@ -3,7 +3,8 @@ typeset -g _UPDATE_ENV_STATUS=0
 # 0 - no update
 # 1 - over 1 day without check
 # 2 - upstream changes detected
-# 3 - over 7 days without check
+# 3 - local changes detected
+# 4 - over 7 days without check
 
 function timeSinceLastUpdate {
     local last_update
@@ -17,13 +18,23 @@ function timeSinceLastUpdate {
 }
 
 function checkForEnvUpdates {
-  local UPSTREAM remoteVersion localVersion
+  local BASE UPSTREAM REMOTE LOCAL
   UPSTREAM=$(git -C "${ZDOTDIR}" rev-parse '@{u}')
-  localVersion=$(git -C "${ZDOTDIR}" rev-parse HEAD)
-  remoteVersion=$(git -C "${ZDOTDIR}" rev-parse "$UPSTREAM")
+  LOCAL=$(git -C "${ZDOTDIR}" rev-parse HEAD)
+  REMOTE=$(git -C "${ZDOTDIR}" rev-parse "$UPSTREAM")
+  BASE=$(git -C "${ZDOTDIR}" merge-base HEAD "$UPSTREAM")
 
-  if [ "${remoteVersion}" != "${localVersion}" ]; then
-    _UPDATE_ENV_STATUS=2
+  if [[ "${REMOTE}" == "${LOCAL}" ]]; then
+    _UPDATE_ENV_STATUS=1
+  else
+    if [[ "${LOCAL}" == "${BASE}" ]]; then
+      _UPDATE_ENV_STATUS=2
+    elif [[ "${REMOTE}" == "${BASE}" ]]; then
+      _UPDATE_ENV_STATUS=3
+    else
+      _UPDATE_ENV_STATUS=4
+    fi
+
     [[ ${__p9k_instant_prompt_active} ]] || echo "${FX[bold]}${FG[yellow]}Your ${ZDOTDIR} is out of sync${FX[none]}${FG[none]}"
   fi
 }
@@ -36,7 +47,7 @@ function startUpdateProcess {
 
   time_since_update=$(timeSinceLastUpdate)
   if [[ time_since_update -gt update_frequency ]]; then
-    _UPDATE_ENV_STATUS=3
+    _UPDATE_ENV_STATUS=4
     if [[ ! ${__p9k_instant_prompt_active} ]]; then
       echo "${FX[bold]}${FG[red]}Environment not updated for $((time_since_update / day_seconds)) days.${FX[none]}${FG[none]}"
       vared -p "Would you like to check for updates? [Y/n]: " -c line
