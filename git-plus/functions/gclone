@@ -1,5 +1,4 @@
 {
-
     local repo group project target
 
     function $0_doClone {

@@ -1,4 +1,6 @@
-#jenv() {
+typeset sh_commands=$(command jenv commands --sh)
+
+function jenv {
   typeset command
   command="$1"
   if [ "$#" -gt 0 ]; then
@@ -6,10 +8,12 @@
   fi
 
   case "$command" in
-  enable-plugin|rehash|shell|shell-options)
+  ${sh_commands[*]})
     eval `jenv "sh-$command" "$@"`;;
   *)
     command jenv "$command" "$@";;
   esac
 
-#}
+}
+
+jenv "$@"
