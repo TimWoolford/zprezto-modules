@@ -40,7 +40,8 @@
     $0_doClone ${repo} ${group} ${project} ${target}
 
     if [[ -e "${target}/.gitmodules" ]]; then
-        git -C ${target} submodule update --init --remote --recursive
+        git -C ${target} submodule sync --recursive
+        git -C ${target} submodule update --init --recursive
     fi
 
 } always {
