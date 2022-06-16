@@ -1,0 +1,19 @@
+#function updateModules {
+  local modules user_module_dirs
+  zstyle -a ':prezto:load' pmodule-dirs 'user_module_dirs'
+  zstyle -a ':prezto:load' pmodule 'modules'
+
+  for module in "${modules[@]}"; do
+    locations=(${user_module_dirs:+${^user_module_dirs}/$module(-/FN)})
+    if (( ${#locations} != 1 )); then
+      continue
+    fi
+
+    local module_location=${locations[-1]}
+
+    if [[ -s "${module_location}/upgrade.zsh" ]]; then
+      printf "${FX[bold]}${FG[blue]}=> %s${FG[none]}${FX[none]}\n" "Updating module ${module}"
+      source "${module_location}/upgrade.zsh"
+    fi
+  done
+#}

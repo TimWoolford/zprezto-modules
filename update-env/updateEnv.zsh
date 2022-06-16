@@ -93,25 +93,6 @@ function updateEnvironment_setSshKeys {
   fi
 }
 
-function updateEnvironment_updateModules {
-  local modules user_module_dirs
-  zstyle -a ':prezto:load' pmodule-dirs 'user_module_dirs'
-  zstyle -a ':prezto:load' pmodule 'modules'
-
-  for module in "${modules[@]}"; do
-    locations=(${user_module_dirs:+${^user_module_dirs}/$module(-/FN)})
-    if (( ${#locations} != 1 )); then
-      continue
-    fi
-
-    local module_location=${locations[-1]}
-
-    if [[ -s "${module_location}/upgrade.zsh" ]]; then
-      stageTitle "Updating module ${module}"
-      source "${module_location}/upgrade.zsh"
-    fi
-  done
-}
 
 function updateEnvironment_setLinks {
 
@@ -206,7 +187,9 @@ function updateEnvironment_addGpgKeys {
   updateEnvironment_brewUpdate
   updateEnvironment_setSshKeys
   updateEnvironment_setLinks
-  updateEnvironment_updateModules
+
+  updateModules
+
   updateEnvironment_installFonts
   updateEnvironment_addGpgKeys
 
@@ -223,7 +206,6 @@ function updateEnvironment_addGpgKeys {
   unfunction updateEnvironment_brewUpdate
   unfunction updateEnvironment_setSshKeys
   unfunction updateEnvironment_setLinks
-  unfunction updateEnvironment_updateModules
   unfunction updateEnvironment_installFonts
   unfunction updateEnvironment_addGpgKeys
   unfunction stageTitle
