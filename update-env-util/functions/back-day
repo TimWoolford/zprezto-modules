@@ -1,0 +1,4 @@
+
+typeset backday=$((24 * 60 * 60 * ${1-0})) now=$(date +%s)
+
+echo $((${now} - ${backday})) >| ~/.environment_lastupdate

@@ -55,11 +55,13 @@ function updateEnvironment_gitUpdate {
 }
 
 function updateEnvironment_gitSubmodules {
+  if zstyle -t ':prezto:module:update-env' force-submodules ; then
     local user_module_dirs
-    subTitle "Update module directories"
+    subTitle "Update module directories to latest versions"
     zstyle -a ':prezto:load' pmodule-dirs 'user_module_dirs'
 
     git -C "${ZDOTDIR}" submodule update --remote --recursive "${user_module_dirs:t}"
+  fi
 }
 
 function updateEnvironment_brewUpdate {

@@ -5,8 +5,6 @@ zstyle -a ':prezto:module:host-alias' machines 'machine_aliases'
 
 typeset -g _HOST_ALIAS=${machine_aliases[${myHostname}]:-${myHostname:0:1:u}${myHostname:1}}
 
-unset machine_aliases
-
 function prompt_host_alias() {
   p10k segment -f 208 -t "${_HOST_ALIAS}"
 }

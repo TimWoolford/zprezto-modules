@@ -7,7 +7,7 @@ typeset -g _UPDATE_ENV_STATUS=0
 # 4 - over 7 days without check
 
 function timeSinceLastUpdate {
-    local last_update
+    typeset -i last_update
 
     if [ -f ~/.environment_lastupdate ]; then
         last_update=$(cat ~/.environment_lastupdate)
@@ -40,16 +40,16 @@ function checkForEnvUpdates {
 }
 
 function startUpdateProcess {
-  local updateThresholdDays=${1:-6}
-  local day_seconds=$((24 * 60 * 60))
-  local update_frequency=$((day_seconds * updateThresholdDays))
-  local time_since_update line
+  typeset -i updateThresholdDays=${1:-6} \
+             day_seconds=$((24 * 60 * 60))
+             time_since_update=$(timeSinceLastUpdate)
+  typeset -i update_frequency=$((day_seconds * updateThresholdDays))
 
-  time_since_update=$(timeSinceLastUpdate)
   if [[ time_since_update -gt update_frequency ]]; then
     _UPDATE_ENV_STATUS=4
     if [[ ! ${__p9k_instant_prompt_active} ]]; then
       echo "${FX[bold]}${FG[red]}Environment not updated for $((time_since_update / day_seconds)) days.${FX[none]}${FG[none]}"
+      typeset line
       vared -p "Would you like to check for updates? [Y/n]: " -c line
       if [[ "${line}" =~ ^(Y|y)$ ]]; then
         updateEnvironment
