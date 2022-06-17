@@ -1,4 +1,5 @@
-typeset showMe="" icon="" colour=0
+#function prompt_update_env_status {
+typeset showMe="" icon="" colour="011"
 
 case $_UPDATE_ENV_STATUS in
   1)
@@ -21,6 +22,6 @@ case $_UPDATE_ENV_STATUS in
     ;;
 esac
 
-p10k segment -f "011" -i "${icon}" -c "${showMe}"
+p10k segment -f ${colour} -i "${icon}" -c "${showMe}"
 
-unset showMe icon
+#}

@@ -7,14 +7,11 @@ typeset -g _UPDATE_ENV_STATUS=0
 # 4 - over 7 days without check
 
 function timeSinceLastUpdate {
-    typeset -i last_update
+  typeset -i last_update=0
 
-    if [ -f ~/.environment_lastupdate ]; then
-        last_update=$(cat ~/.environment_lastupdate)
-    else
-        last_update=0
-    fi
-    echo $(($(date +%s) - last_update))
+  [ -f ~/.environment_lastupdate ] && last_update=$(cat ~/.environment_lastupdate)
+
+  echo $(($(date +%s) - last_update))
 }
 
 function checkForEnvUpdates {
@@ -24,12 +21,12 @@ function checkForEnvUpdates {
   REMOTE=$(git -C "${ZDOTDIR}" rev-parse "$UPSTREAM")
   BASE=$(git -C "${ZDOTDIR}" merge-base HEAD "$UPSTREAM")
 
-  if [[ "${REMOTE}" == "${LOCAL}" ]]; then
+  if [ "${REMOTE}" == "${LOCAL}" ]; then
     _UPDATE_ENV_STATUS=1
   else
-    if [[ "${LOCAL}" == "${BASE}" ]]; then
+    if [ "${LOCAL}" == "${BASE}" ]; then
       _UPDATE_ENV_STATUS=2
-    elif [[ "${REMOTE}" == "${BASE}" ]]; then
+    elif [ "${REMOTE}" == "${BASE}" ]; then
       _UPDATE_ENV_STATUS=3
     else
       _UPDATE_ENV_STATUS=4
