@@ -21,12 +21,12 @@ function checkForEnvUpdates {
   REMOTE=$(git -C "${ZDOTDIR}" rev-parse "$UPSTREAM")
   BASE=$(git -C "${ZDOTDIR}" merge-base HEAD "$UPSTREAM")
 
-  if [ "${REMOTE}" == "${LOCAL}" ]; then
+  if [[ ${REMOTE} == ${LOCAL} ]]; then
     _UPDATE_ENV_STATUS=1
   else
-    if [ "${LOCAL}" == "${BASE}" ]; then
+    if [[ ${LOCAL} == ${BASE} ]]; then
       _UPDATE_ENV_STATUS=2
-    elif [ "${REMOTE}" == "${BASE}" ]; then
+    elif [[ ${REMOTE} == ${BASE} ]]; then
       _UPDATE_ENV_STATUS=3
     else
       _UPDATE_ENV_STATUS=4
