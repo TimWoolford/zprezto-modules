@@ -13,7 +13,7 @@
     typeset upgradeScript=${locations[-1]}/upgrade.zsh
 
     if [[ -s ${upgradeScript} ]]; then
-      printf "${FX[bold]}${FG[blue]}=> %s${FG[none]}${FX[none]}\n" "Updating module ${module}"
+      stageTitle "Updating module ${module}"
       source "${upgradeScript}"
     fi
   done

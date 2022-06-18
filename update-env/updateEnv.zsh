@@ -1,11 +1,4 @@
-
-function stageTitle {
-  printf "${FX[bold]}${FG[blue]}=> %s${FG[none]}${FX[none]}\n" "${1}"
-}
-
-function subTitle {
-  printf "${FG[blue]}==> %s${FG[none]}\n" "${1}"
-}
+#!/usr/bin/env zsh
 
 function updateEnvironment_gitUpdate {
   (
@@ -200,7 +193,7 @@ function updateEnvironment_addGpgKeys {
 
   _UPDATE_ENV_STATUS=0
   date +%s >| ~/.environment_lastupdate
-  printf "\n\n${FX[bold]}${FG[yellow]}%s${FG[none]}${FX[none]}\n" "You will need to reopen a terminal session to benefit from any updates"
+  stageTitle "You will need to reopen a terminal session to benefit from any updates" yellow
 
 } always {
   unfunction updateEnvironment_gitUpdate
@@ -210,7 +203,5 @@ function updateEnvironment_addGpgKeys {
   unfunction updateEnvironment_setLinks
   unfunction updateEnvironment_installFonts
   unfunction updateEnvironment_addGpgKeys
-  unfunction stageTitle
-  unfunction subTitle
 }
 

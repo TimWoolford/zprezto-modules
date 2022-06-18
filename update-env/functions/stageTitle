@@ -1,0 +1,3 @@
+#!/usr/bin/env zsh
+
+printf "${FX[bold]}${FG[${2-blue}]}=> %s${FG[none]}${FX[none]}\n" "${1}"
