@@ -1,3 +1,4 @@
+#!/usr/bin/env zsh
 #function updateEnvironment {
 source "${_UPDATE_ENV_DIR}/updateEnv.zsh"
 #}

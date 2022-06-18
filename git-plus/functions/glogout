@@ -1,7 +1,8 @@
+#!/usr/bin/env zsh
 #function glogout {
-    local repo=${1:-${DEFAULT_REPO}}
+    typeset repo=${1:-${DEFAULT_REPO}}
 
-    sudo security -q delete-internet-password -s ${repo} 2> /dev/null
+    sudo security -q delete-internet-password -s "${repo}" 2> /dev/null
 
     git credential-cache exit
     git config --system --unset credential.helper

@@ -1,3 +1,5 @@
+#!/usr/bin/env zsh
+
 if [[ ! ${commands[kubectl]} ]]; then
   return 1;
 fi

@@ -1,3 +1,4 @@
+#!/usr/bin/env zsh
 
 if (( ! $+commands[minikube] )); then
     return 1

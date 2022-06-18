@@ -1,7 +1,8 @@
+#!/usr/bin/env zsh
 #function prompt_update_env_status {
 typeset showMe="" icon="" colour="011"
 
-case $_UPDATE_ENV_STATUS in
+case $_UPDATE_ENV_STATUS {
   1)
     showMe=1
     icon="⚠️"
@@ -20,7 +21,7 @@ case $_UPDATE_ENV_STATUS in
     showMe=1
     icon="‼️"
     ;;
-esac
+}
 
 p10k segment -f ${colour} -i "${icon}" -c "${showMe}"
 

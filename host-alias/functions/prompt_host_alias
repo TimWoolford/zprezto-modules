@@ -1,3 +1,5 @@
+#!/usr/bin/env zsh
+
 typeset -A machine_aliases
 typeset myHostname=$(hostname -s)
 

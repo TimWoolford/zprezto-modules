@@ -1,4 +1,5 @@
 #!/usr/bin/env zsh
+
 typeset -a plugins
 zstyle -a ":prezto:module:jenv" plugins "plugins"
 

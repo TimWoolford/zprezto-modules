@@ -1,19 +1,20 @@
+#!/usr/bin/env zsh
 #function updateModules {
-  local modules user_module_dirs
-  zstyle -a ':prezto:load' pmodule-dirs 'user_module_dirs'
+  typeset -a modules user_module_dirs
   zstyle -a ':prezto:load' pmodule 'modules'
+  zstyle -a ':prezto:load' pmodule-dirs 'user_module_dirs'
 
   for module in "${modules[@]}"; do
-    locations=(${user_module_dirs:+${^user_module_dirs}/$module(-/FN)})
+    typeset -a locations=(${user_module_dirs:+${^user_module_dirs}/$module(-/FN)})
     if (( ${#locations} != 1 )); then
       continue
     fi
 
-    local module_location=${locations[-1]}
+    typeset upgradeScript=${locations[-1]}/upgrade.zsh
 
-    if [[ -s "${module_location}/upgrade.zsh" ]]; then
+    if [[ -s ${upgradeScript} ]]; then
       printf "${FX[bold]}${FG[blue]}=> %s${FG[none]}${FX[none]}\n" "Updating module ${module}"
-      source "${module_location}/upgrade.zsh"
+      source "${upgradeScript}"
     fi
   done
 #}

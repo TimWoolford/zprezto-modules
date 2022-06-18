@@ -1,3 +1,4 @@
+#!/usr/bin/env zsh
 #function jenv {
   typeset command="$1"
 

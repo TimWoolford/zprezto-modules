@@ -1,3 +1,5 @@
+#!/usr/bin/env zsh
+
 # GIT
 GIT_UNCOMMITTED="${GIT_UNCOMMITTED:-+}"
 GIT_UNSTAGED="${GIT_UNSTAGED:-!}"

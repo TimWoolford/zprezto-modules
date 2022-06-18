@@ -1,4 +1,4 @@
-
+#!/usr/bin/env zsh
 rm -rf ${ZDOTDIR:-$HOME}/.zcompdump{,.zwc} ${XDG_CACHE_HOME:-$HOME/.cache}/prezto/zcomp{cache,dump}
 autoload -Uz compinit
 

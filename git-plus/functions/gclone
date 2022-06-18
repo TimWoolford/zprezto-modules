@@ -1,51 +1,55 @@
+#!/usr/bin/env zsh
 {
-    local repo group project target
+  typeset -A _repos
+  zstyle -a ':prezto:module:git-plus' repos '_repos'
 
-    function $0_doClone {
-        local repoUrl=$1 group=$2 project=${3%.git}.git target=$4
+  function _doClone {
+      typeset repoUrl=$1 group=$2 project=${3%.git}.git target=$4
 
-        if [[ ${repoUrl} =~ "^https://" ]]; then
-            git clone ${repoUrl}/${group}/${project} ${target}
-        elif [[ ${repoUrl} =~ "^(.*)@" ]]; then
-            git clone ${repoUrl}:${group}/${project} ${target}
-        elif [[ -n "${REPOS[${repoUrl}]}" ]]; then
-            IFS="|" read conn_type rest <<< ${REPOS[${repoUrl}]}
+      if [[ ${repoUrl} =~ "^https://" ]]; then
+          git clone "${repoUrl}/${group}/${project}" "${target}"
+      elif [[ ${repoUrl} =~ ^(.*)@ ]]; then
+          git clone "${repoUrl}:${group}/${project}" "${target}"
+      elif [[ -n ${_repos[${repoUrl}]} ]]; then
+          IFS="|" read -r conn_type rest <<< "${_repos[${repoUrl}]}"
 
-            if [[ "${conn_type}" == "https" ]]; then
-                $0 https://${repoUrl} ${group} ${project} ${target}
-            else
-                $0 ${conn_type}${repoUrl} ${group} ${project} ${target}
-            fi
-        else
-            echo "$FX[bold]$FG[red]Cannot resolve repo [$repoUrl /$group/$project]$FX[none]$FG[none]"
-        fi
-    }
+          if [[ "${conn_type}" == "https" ]]; then
+              $0 "https://${repoUrl}" "${group}" "${project}" "${target}"
+          else
+              $0 "${conn_type}${repoUrl}" "${group}" "${project}" "${target}"
+          fi
+      else
+          echo "${FX[bold]}${FG[red]}Cannot resolve repo [$repoUrl /$group/$project]${FX[none]}${FG[none]}"
+      fi
+  }
 
-    if [[ $# == 1 ]]; then # derive repo and group from path
-        project=${1} target=${project%.git}
-        IFS='/' read repo group <<< ${$(pwd)#${CHECKOUT_DIR}/}
-    elif [[ $# == 2 ]]; then # use default repo with provided group and path
-        repo=${DEFAULT_REPO} group=${1} project=${2}
-        target="${CHECKOUT_DIR}/${repo#(https://|*@)}/${group}/${project%.git}"
-    elif [[ $# == 3 ]]; then # use provided repo, group and path
-        repo=${1} group=${2} project=${3}
-        target="${CHECKOUT_DIR}/${repo#(https://|*@)}/${group}/${project%.git}"
-    fi
+  typeset repo group project target
 
-    if [[ -n ${target} ]]; then
-        mkdir -p ${target}
-    fi
+  if [[ $# == 1 ]]; then # derive repo and group from path
+      project=${1} target=${project%.git}
+      IFS='/' read -r repo group <<< ${$(pwd)#${CHECKOUT_DIR}/}
+  elif [[ $# == 2 ]]; then # use default repo with provided group and path
+      repo=${DEFAULT_REPO} group=${1} project=${2}
+      target="${CHECKOUT_DIR}/${repo#(https://|*@)}/${group}/${project%.git}"
+  elif [[ $# == 3 ]]; then # use provided repo, group and path
+      repo=${1} group=${2} project=${3}
+      target="${CHECKOUT_DIR}/${repo#(https://|*@)}/${group}/${project%.git}"
+  fi
 
-    $0_doClone ${repo} ${group} ${project} ${target}
+  if [[ -n ${target} ]]; then
+      mkdir -p "${target}"
+  fi
 
-    if [[ -e "${target}/.gitmodules" ]]; then
-        git -C ${target} submodule sync --recursive
-        git -C ${target} submodule update --init --recursive
-    fi
+  _doClone "${repo}" "${group}" "${project}" "${target}"
+
+  if [[ -e ${target}/.gitmodules ]]; then
+      git -C "${target}" submodule sync --recursive
+      git -C "${target}" submodule update --init --recursive
+  fi
 
 } always {
-    unfunction $0_doClone
-    if [[ -d ${target} && -z "$(ls -A ${target})" ]]; then
-        rmdir ${target}
-    fi
+  unfunction _doClone
+  if [[ -d ${target} && -z $(ls -A ${target}) ]]; then
+      rmdir ${target}
+  fi
 }

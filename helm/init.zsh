@@ -1,4 +1,6 @@
-if [ ! $commands[helm] ]; then
+#!/usr/bin/env zsh
+
+if [[ ! ${commands[helm]} ]]; then
   return 1
 fi
 

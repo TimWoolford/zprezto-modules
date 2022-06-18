@@ -1,4 +1,5 @@
+#!/usr/bin/env zsh
 
-typeset backday=$((24 * 60 * 60 * ${1-0})) now=$(date +%s)
+typeset backDay=$((24 * 60 * 60 * ${1-0})) now=$(date +%s)
 
-echo $((${now} - ${backday})) >| ~/.environment_lastupdate
+echo $((now - backDay)) >| ~/.environment_lastupdate
