@@ -1,0 +1,22 @@
+#!/usr/bin/env zsh
+#function checkForEnvUpdates {
+  typeset UPSTREAM REMOTE LOCAL URL
+
+  URL="$(git -C "${ZDOTDIR}" config --get remote.origin.url)"
+  LOCAL=$(git -C "${ZDOTDIR}" rev-parse HEAD)
+  UPSTREAM=$(git -C "${ZDOTDIR}" rev-parse '@{u}')
+  REMOTE=$(git -C "${ZDOTDIR}" ls-remote "${URL}" HEAD | awk '{print $1}')
+
+  if [[ ${REMOTE} == "${LOCAL}" ]]; then
+    echo 0
+  else
+    typeset BASE=$(git -C "${ZDOTDIR}" merge-base HEAD "${UPSTREAM}")
+    if [[ ${LOCAL} == "${BASE}" ]]; then
+      echo 2
+    elif [[ ${REMOTE} == "${BASE}" ]]; then
+      echo 3
+    else
+      echo 4
+    fi
+  fi
+#}

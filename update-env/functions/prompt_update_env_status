@@ -1,8 +1,20 @@
 #!/usr/bin/env zsh
 #function prompt_update_env_status {
 typeset showMe="" icon="" colour="011"
+typeset -i updateSeconds=$(($(date +%s) - _SESSION_UPDATE_TIME))
 
-case $_UPDATE_ENV_STATUS {
+if [[ updateSeconds -ge $((60 * 60)) ]]; then
+  _UPDATE_ENV_STATUS=$(checkForEnvUpdates)
+  _SESSION_UPDATE_TIME=$(date +%s)
+fi
+
+if [[ _UPDATE_DAYS -gt 7 ]]; then
+  colour="160"
+elif [[ _UPDATE_DAYS -gt 1 ]]; then
+  colour="004"
+fi
+
+case $_UPDATE_ENV_STATUS in
   1)
     showMe=1
     icon="⚠️"
@@ -10,18 +22,16 @@ case $_UPDATE_ENV_STATUS {
   2)
     showMe=1
     icon="⬇"
-    colour="004"
     ;;
   3)
     showMe=1
     icon="⬆"
-    colour="004"
     ;;
   4)
     showMe=1
     icon="‼️"
     ;;
-}
+esac
 
 p10k segment -f ${colour} -i "${icon}" -c "${showMe}"
 

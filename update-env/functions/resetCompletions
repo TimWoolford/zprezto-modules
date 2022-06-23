@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
-rm -rf ${ZDOTDIR:-$HOME}/.zcompdump{,.zwc} ${XDG_CACHE_HOME:-$HOME/.cache}/prezto/zcomp{cache,dump}
+rm -rf "${ZDOTDIR:-$HOME}/.zcompdump"{,.zwc} "${XDG_CACHE_HOME:-$HOME/.cache}/prezto/zcomp"{cache,dump}
 autoload -Uz compinit
 
-zcompdump="${XDG_CACHE_HOME:-$HOME/.cache}/prezto/zcompdump"
-compinit -C -d "$zcompdump"
-zcompile "$zcompdump"
+typeset dumpFile="${XDG_CACHE_HOME:-$HOME/.cache}/prezto/zcompdump"
+compinit -C -d "${dumpFile}"
+zcompile "${dumpFile}"
