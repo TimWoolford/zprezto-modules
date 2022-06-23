@@ -1,36 +1,32 @@
 #!/usr/bin/env zsh
 #function prompt_update_env_status {
 typeset showMe="" icon="" colour="011"
-typeset -i updateSeconds=$(($(date +%s) - _SESSION_UPDATE_TIME))
+typeset -i  updateSeconds=$((EPOCHSECONDS - _SESSION_UPDATE_TIME))
 
-if [[ updateSeconds -ge $((60 * 60)) ]]; then
-  _UPDATE_ENV_STATUS=$(checkForEnvUpdates)
-  _SESSION_UPDATE_TIME=$(date +%s)
+if zstyle -t ':prezto:module:update-env' update-check ; then
+  typeset -i  checkSeconds
+  zstyle -s ':prezto:module:update-env' update-check-seconds 'checkSeconds' || checkSeconds=600
+
+  if [[ updateSeconds -ge checkSeconds ]]; then
+    { checkForEnvUpdates } &!
+    _SESSION_UPDATE_TIME=${EPOCHSECONDS}
+  fi
 fi
 
 if [[ _UPDATE_DAYS -gt 7 ]]; then
   colour="160"
+  (( $_UPDATE_ENV_STATUS )) || _UPDATE_ENV_STATUS=4
 elif [[ _UPDATE_DAYS -gt 1 ]]; then
   colour="004"
 fi
 
+(( $_UPDATE_ENV_STATUS )) && showMe=1
+
 case $_UPDATE_ENV_STATUS in
-  1)
-    showMe=1
-    icon="⚠️"
-    ;;
-  2)
-    showMe=1
-    icon="⬇"
-    ;;
-  3)
-    showMe=1
-    icon="⬆"
-    ;;
-  4)
-    showMe=1
-    icon="‼️"
-    ;;
+  1) icon="⚠️" ;;
+  2) icon="⬇" ;;
+  3) icon="⬆" ;;
+  4) icon="‼️" ;;
 esac
 
 p10k segment -f ${colour} -i "${icon}" -c "${showMe}"

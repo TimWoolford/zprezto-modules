@@ -8,15 +8,15 @@
   REMOTE=$(git -C "${ZDOTDIR}" ls-remote "${URL}" HEAD | awk '{print $1}')
 
   if [[ ${REMOTE} == "${LOCAL}" ]]; then
-    echo 0
+    _UPDATE_ENV_STATUS=0
   else
     typeset BASE=$(git -C "${ZDOTDIR}" merge-base HEAD "${UPSTREAM}")
     if [[ ${LOCAL} == "${BASE}" ]]; then
-      echo 2
+      _UPDATE_ENV_STATUS=2
     elif [[ ${REMOTE} == "${BASE}" ]]; then
-      echo 3
+      _UPDATE_ENV_STATUS=3
     else
-      echo 4
+      _UPDATE_ENV_STATUS=4
     fi
   fi
 #}

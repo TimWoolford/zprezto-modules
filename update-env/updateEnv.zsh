@@ -191,8 +191,9 @@ function updateEnvironment_addGpgKeys {
   stageTitle "Reloading Completions"
   resetCompletions
 
-  _UPDATE_ENV_STATUS=0
+  _UPDATE_ENV_STATUS=1
   date +%s >| ~/.environment_lastupdate
+  echo
   stageTitle "You will need to reopen a terminal session to benefit from any updates" yellow
 
 } always {
