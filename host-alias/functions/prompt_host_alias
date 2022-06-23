@@ -1,14 +1,13 @@
 #!/usr/bin/env zsh
 
 typeset -A machine_aliases
-typeset myHostname=$(hostname -s)
 
 zstyle -a ':prezto:module:host-alias' machines 'machine_aliases'
+typeset hostAlias=${machine_aliases[${HOST}]:-${HOST:0:1:u}${HOST:1}}
 
-typeset -g _HOST_ALIAS=${machine_aliases[${myHostname}]:-${myHostname:0:1:u}${myHostname:1}}
-
-function prompt_host_alias() {
-  p10k segment -f 208 -t "${_HOST_ALIAS}"
-}
+eval "
+prompt_host_alias() {
+  p10k segment -f 208 -t \"${hostAlias}\"
+}"
 
 prompt_host_alias "$@"
