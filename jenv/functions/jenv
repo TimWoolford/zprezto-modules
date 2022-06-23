@@ -1,15 +1,23 @@
 #!/usr/bin/env zsh
-#function jenv {
-  typeset command="$1"
+typeset -a shCommands=($(command jenv commands --sh))
 
-  if [ "$#" -gt 0 ]; then
+typeset IFS="|"
+typeset fnText="
+function jenv {
+  typeset command=\"\$1\"
+
+  if [ \"\$#\" -gt 0 ]; then
     shift
   fi
 
-  case "$command" in
-  enable-plugin|rehash|shell|shell-options)
-    eval `jenv "sh-$command" "$@"`;;
+  case \"\$command\" in
+  ${shCommands[*]})
+    eval \`jenv \"sh-\$command\" \"\$@\"\`;;
   *)
-    command jenv "$command" "$@";;
+    command jenv \"\$command\" \"\$@\";;
   esac
-#}
+}"
+
+eval "${fnText}"
+
+jenv "$@"
