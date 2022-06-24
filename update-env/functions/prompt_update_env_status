@@ -8,19 +8,19 @@ if zstyle -t ':prezto:module:update-env' update-check ; then
   zstyle -s ':prezto:module:update-env' update-check-seconds 'checkSeconds' || checkSeconds=600
 
   if [[ updateSeconds -ge checkSeconds ]]; then
-    { checkForEnvUpdates } &!
+    zsh-defer checkForEnvUpdates
     _SESSION_UPDATE_TIME=${EPOCHSECONDS}
   fi
 fi
 
 if [[ _UPDATE_DAYS -gt 7 ]]; then
   colour="160"
-  (( $_UPDATE_ENV_STATUS )) || _UPDATE_ENV_STATUS=4
+  (( _UPDATE_ENV_STATUS )) || _UPDATE_ENV_STATUS=4
 elif [[ _UPDATE_DAYS -gt 1 ]]; then
   colour="004"
 fi
 
-(( $_UPDATE_ENV_STATUS )) && showMe=1
+(( _UPDATE_ENV_STATUS )) && showMe=1
 
 case $_UPDATE_ENV_STATUS in
   1) icon="⚠️" ;;

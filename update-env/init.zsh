@@ -1,5 +1,7 @@
 #!/usr/bin/env zsh
 
+pmodload 'zsh-defer'
+
 typeset -g  _UPDATE_ENV_DIR=${0:h}
 typeset -gi _UPDATE_ENV_STATUS=0
 typeset -gi _SESSION_UPDATE_TIME=$(date +%s)

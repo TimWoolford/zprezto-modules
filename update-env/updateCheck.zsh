@@ -29,13 +29,13 @@ function startUpdateProcess {
       else
         echo
         subTitle "You have annoyed the monkey!" red
-        checkForEnvUpdates
+        zsh-defer checkForEnvUpdates
       fi
     else
       [[ ${__p9k_instant_prompt_active} && $_UPDATE_ENV_STATUS == 0 ]] || stageTitle "Your ${ZDOTDIR} is out of sync" yellow
     fi
   elif [[ _UPDATE_DAYS -ge warnThresholdDays ]]; then
-    checkForEnvUpdates
+    zsh-defer checkForEnvUpdates
     [[ ${__p9k_instant_prompt_active} ]] || echo "It has been ${FX[bold]}${_UPDATE_DAYS}${FX[none]} days since your environment was updated"
   fi
 }
