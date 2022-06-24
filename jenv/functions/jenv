@@ -2,7 +2,7 @@
 typeset -a shCommands=($(command jenv commands --sh))
 
 typeset IFS="|"
-typeset fnText="
+eval "
 function jenv {
   typeset command=\"\$1\"
 
@@ -17,7 +17,5 @@ function jenv {
     command jenv \"\$command\" \"\$@\";;
   esac
 }"
-
-eval "${fnText}"
 
 jenv "$@"

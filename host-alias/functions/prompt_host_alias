@@ -3,7 +3,8 @@
 typeset -A machine_aliases
 
 zstyle -a ':prezto:module:host-alias' machines 'machine_aliases'
-typeset hostAlias=${machine_aliases[${HOST}]:-${HOST:0:1:u}${HOST:1}}
+typeset hostname=${HOST%\.*}
+typeset hostAlias=${machine_aliases[${hostname}]:-${hostname:0:1:u}${hostname:1}}
 
 eval "
 prompt_host_alias() {

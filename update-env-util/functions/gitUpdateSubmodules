@@ -1,0 +1,5 @@
+#!/usr/bin/env zsh
+
+git -C "${ZDOTDIR}" submodule update --remote
+git -C "${ZDOTDIR}" submodule sync --recursive
+git -C "${ZDOTDIR}" submodule update --init --recursive
