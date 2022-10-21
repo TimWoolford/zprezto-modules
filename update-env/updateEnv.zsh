@@ -131,7 +131,7 @@ function updateEnvironment_setLinks {
   }
 
   function setLinks_clearBrokenLinks {
-      for link in $(find ${HOME} -maxdepth 1 -type l); do
+      for link in "${(@f)$(find ${HOME} -maxdepth 1 -type l)}" ; do
         if [ ! -e "${link}" ]; then
           echo "${FG[red]}Removing broken link [${link}].${FG[none]}"
           unlink "${link}"
