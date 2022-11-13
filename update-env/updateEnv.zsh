@@ -177,7 +177,7 @@ function updateEnvironment_addGpgKeys {
 }
 
 {
-  updateEnvironment_gitUpdate
+  updateEnvironment_gitUpdate || (stageTitle  "GIT update failed. Please resolve issues" red) && return
   updateEnvironment_gitSubmodules
   updateEnvironment_brewUpdate
   updateEnvironment_setSshKeys
