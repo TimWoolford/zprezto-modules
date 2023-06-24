@@ -4,6 +4,16 @@
     typeset idea="$(ls -1d /Applications/IntelliJ\ * | tail -n1)"
     typeset wd="$(pwd)"
 
+    if [ -x "${idea}/Contents/MacOS/idea" ]; then
+      function openIdea() {
+        "${idea}"/Contents/MacOS/idea "$@" > /dev/null 2>&1 &|
+      }
+    else
+      function openIdea() {
+        open -a "$idea" "$@"
+      }
+    fi
+
     # were we given a directory?
     if [ -d "$1" ]; then
         # echo "checking for things in the working dir given"
@@ -14,25 +24,25 @@
     # were we given a file?
     if [ -f "$1" ]; then
         # echo "opening '$1'"
-        open -a "$idea" "$1"
+        openIdea "$1"
     else
         # let's check for stuff in our working directory.
         # does our working dir have an .idea directory?
         if [ -d ".idea" ]; then
             # echo "opening via the .idea dir"
-            open -a "$idea" .
+            openIdea .
         # is there an idea project file?
         elif test -n "$(find . -maxdepth 1 -name "*.ipr" -print -quit)"; then
             # echo "opening via the project file"
-            open -a "$idea" "$(ls -1d *.ipr | head -n1)"
+           openIdea "$(ls -1d *.ipr | head -n1)"
         # Is there a pom.xml?
         elif [ -f pom.xml ]; then
             # echo "importing from pom"
-            open -a "$idea" "pom.xml"
+            openIdea "pom.xml"
         # can't do anything smart; just open idea
         else
             # echo 'cbf'
-            open "$idea"
+            openIdea
         fi
     fi
 #}
