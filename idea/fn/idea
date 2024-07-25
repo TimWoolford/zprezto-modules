@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 #function idea {
     # check for where the latest version of idea is installed
-    typeset idea="$(ls -1d /Applications/IntelliJ\ * | tail -n1)"
+    typeset idea="$(ls -1d ${HOME}/Applications/IntelliJ\ *(N) /Applications/IntelliJ\ *(N) | tail -n1)"
     typeset wd="$(pwd)"
 
     if [ -x "${idea}/Contents/MacOS/idea" ]; then
