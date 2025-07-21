@@ -61,7 +61,6 @@ function updateEnvironment_brewUpdate {
   stageTitle "Updating homebrew"
   subTitle "Update brew"
   brew update && brew upgrade
-  brew tap homebrew/bundle
   subTitle "Update brewfile bundle"
   brew bundle --verbose --file="${ZDOTDIR}/Brewfile"
 }
