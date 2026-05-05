@@ -72,7 +72,7 @@ function updateEnvironment_setSshKeys {
     subTitle "Adding SSH keys"
     for identityFile in "${privateKeyFiles[@]}"; do
       chmod 600 "${identityFile}"
-      ssh-add --apple-use-keychain "${identityFile}"
+      /usr/bin/ssh-add --apple-use-keychain "${identityFile}"
     done
   fi
 
