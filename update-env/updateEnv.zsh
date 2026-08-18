@@ -16,7 +16,7 @@ function updateEnvironment_gitUpdate {
 
     cd -q -- "${ZDOTDIR}" || return 7
     git diff --quiet HEAD --exit-code
-    if [[ $? ]]; then
+    if [[ "$?" ]]; then
       echo "${FG[red]}Local changes detected${FG[none]}"
       return 1
     fi
