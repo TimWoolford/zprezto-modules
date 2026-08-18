@@ -5,6 +5,7 @@ function updateEnvironment_gitUpdate {
     stageTitle "Updating environment"
     subTitle "Update git env dir"
 
+
     function cannot-fast-forward {
       local STATUS="$1"
       [[ -n "${STATUS}" ]] && printf "%s\n" "${STATUS}"
@@ -14,6 +15,8 @@ function updateEnvironment_gitUpdate {
     }
 
     cd -q -- "${ZDOTDIR}" || return 7
+    git diff --quiet HEAD --exit-code || echo "${FG[red]}Local changes detected${FG[none]}" && return 1
+
     local orig_branch="$(git symbolic-ref HEAD 2> /dev/null | cut -d '/' -f 3)"
     git fetch || return "$?"
 
