@@ -66,7 +66,7 @@ function updateEnvironment_gitSubmodules {
 function updateEnvironment_brewUpdate {
   stageTitle "Updating homebrew"
   subTitle "Update brew"
-  brew update -y && brew upgrade -y --no-quit
+  brew update && brew upgrade -y --no-quit
   subTitle "Update brewfile bundle"
   brew bundle --verbose --file="${ZDOTDIR}/Brewfile"
 }
