@@ -2,10 +2,10 @@
 #function glogout {
     typeset repo=${1:-${DEFAULT_REPO}}
 
-    sudo security -q delete-internet-password -s "${repo}" 2> /dev/null
+    gh auth logout --hostname github.com
+
+    sudo security -q delete-internet-password -s "${repo}" > /dev/null 2>&1
 
     git credential-cache exit
     git config --system --unset credential.helper
-    git config --global --unset credential.helper
-    git config --global credential.helper 'cache --timeout 28800'
 #}

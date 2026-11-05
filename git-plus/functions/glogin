@@ -1,0 +1,8 @@
+#!/usr/bin/env zsh
+#function glogin {
+    # Logs in to GitHub. dotfiles/gitconfig makes Git use this login, over HTTPS.
+    # Enter the code in your own browser, so a shared machine's Chrome never signs in to GitHub.
+    echo "Enter the code below at https://github.com/login/device in your own browser. It is copied to the clipboard here."
+    GH_BROWSER=true GH_PROMPT_DISABLED=1 gh auth login --hostname github.com --web --clipboard --git-protocol https || return 1
+    echo "Signed in to GitHub. On a shared machine, run glogout at the end of the day."
+#}
